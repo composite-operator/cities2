@@ -1,5 +1,4 @@
 import { bindValue, trigger, useValue } from "cs2/api";
-import { getModule } from "cs2/modding";
 import type { ModuleRegistry } from "cs2/modding";
 import { useEffect, useState } from "react";
 import type { ComponentType, SyntheticEvent } from "react";
@@ -112,23 +111,60 @@ const roadNameStatusBinding = bindValue<string>(
 );
 
 const readModule = <T,>(
+  moduleRegistry: ModuleRegistry,
   modulePath: string,
   exportName: string
 ): T | null => {
   try {
-    return (getModule(modulePath, exportName) as T | undefined) ?? null;
+    const preferred = moduleRegistry.get(modulePath, exportName) as
+      | T
+      | undefined;
+    if (preferred) {
+      return preferred;
+    }
+  } catch {
+    // Continue with the registry lookup below. Patch updates sometimes move a
+    // stock module while preserving its file name and export.
+  }
+
+  try {
+    if (typeof moduleRegistry.find !== "function") {
+      return null;
+    }
+
+    const fileName = modulePath.split("/").pop();
+    if (!fileName) {
+      return null;
+    }
+
+    const escapedFileName = fileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const candidates = moduleRegistry
+      .find(new RegExp(`${escapedFileName}$`, "i"))
+      .filter(([, ...exports]) => exports.includes(exportName));
+    if (candidates.length !== 1) {
+      return null;
+    }
+
+    return (
+      (moduleRegistry.get(candidates[0][0], exportName) as T | undefined) ??
+      null
+    );
   } catch {
     return null;
   }
 };
 
-export function resolveConstructionRuntime(): ConstructionRuntime | null {
+export function resolveConstructionRuntime(
+  moduleRegistry: ModuleRegistry
+): ConstructionRuntime | null {
   const AssetMenu = readModule<ComponentType<AssetMenuProps>>(
+    moduleRegistry,
     ASSET_MENU_PATH,
     "AssetMenu"
   );
   const gameScreenClasses =
     readModule<GameScreenClasses>(
+      moduleRegistry,
       GAME_SCREEN_STYLES_PATH,
       "classes"
     ) ?? {};
@@ -147,6 +183,7 @@ export function installEditorAssetUnlock(
   moduleRegistry: ModuleRegistry
 ): boolean {
   const BaseItemGrid = readModule<ComponentType<ItemGridProps>>(
+    moduleRegistry,
     ITEM_GRID_PATH,
     "ItemGrid"
   );

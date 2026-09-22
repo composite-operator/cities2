@@ -1,4 +1,4 @@
-# Map Editor Bridge [BETA] 0.4.10
+# Map Editor Bridge [BETA] 0.4.11
 
 This share package contains:
 

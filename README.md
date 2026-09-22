@@ -31,6 +31,9 @@ Each project includes its own README, publishing notes, UI package, C# project,
 and release builder. Cities: Skylines II's official modding toolchain is
 required for the final game-compatible build.
 
+See [Compatibility policy](COMPATIBILITY.md) for the current game matrix,
+forward-compatibility limits, and the required check after a game update.
+
 Generated binaries, toolchain caches, local installations, release archives,
 decompiled game code, and personal save data are intentionally excluded.
 

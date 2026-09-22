@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.6
+
+- Restored the active-playset Mods view on Cities: Skylines II 1.6.2f1 after
+  the game replaced its synchronous Paradox Mods query with asynchronous APIs.
+- Added a version-tolerant playset adapter that detects current asynchronous
+  and legacy synchronous query methods without linking to a removed method.
+- Keeps diagnostics available when a future playset API is unavailable and
+  reports the tool shelf as temporarily unavailable instead of throwing every
+  UI update.
+
 ## 0.2.5
 
 - Changed the launcher badge and summary totals to count unique records instead

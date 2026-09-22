@@ -50,15 +50,14 @@ Back up important maps before using any editor tool. This is an unofficial commu
   <Screenshot Value="Properties/Screenshots/03-road-name-bridge-store.jpg" />
   <Screenshot Value="Properties/Screenshots/05-bridge-showcase-store-duplicate.jpg" />
   <Screenshot Value="Properties/Screenshots/04-road-name-bridge-store-duplicate.jpg" />
-  <ModVersion Value="0.4.10" />
+  <ModVersion Value="0.4.11" />
   <GameVersion Value="1.6.*" />
   <ChangeLog>
-Icon and name resilience.
+Autumn Breeze UI compatibility.
 
-- Uses the game's single stock prefab UI binding service instead of registering a competing duplicate
-- Prevents editor support bindings from interfering with normal gameplay icon and prefab-detail requests
-- Adds an initials fallback when a construction icon URL is absent or fails to load
-- Shows each construction button's name in a compact hover and keyboard-focus label
+- Rebuilt and checked against Cities: Skylines II 1.6.2f1
+- Resolves required stock UI modules through the official module registry
+- Tolerates compatible registry path moves when the file name and export stay unambiguous
   </ChangeLog>
   <AccessLevel Value="Public" />
 </Publish>

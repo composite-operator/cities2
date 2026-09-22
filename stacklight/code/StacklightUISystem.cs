@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Colossal.Logging;
 using Colossal.PSI.Common;
 using Colossal.PSI.PdxSdk;
@@ -22,7 +24,7 @@ namespace Stacklight
     public sealed partial class StacklightUISystem : UISystemBase
     {
         private const string BindingGroup = "stacklight";
-        private const string StacklightVersion = "0.2.5";
+        private const string StacklightVersion = "0.2.6";
         private const int MaxUniqueEntries = 100;
         private const int MaxMessageLength = 2_000;
         private const int MaxDetailLength = 12_000;
@@ -78,6 +80,7 @@ namespace Stacklight
         private string _contextStatus = "Waiting for active playset";
         private volatile bool _contextRefreshRequested = true;
         private DateTime _nextContextAttemptUtc;
+        private Task? _contextRefreshTask;
         private PdxSdkPlatform? _pdxPlatform;
         private MapMetadataSystem _mapMetadataSystem = null!;
 
@@ -221,9 +224,11 @@ namespace Stacklight
         protected override void OnUpdate()
         {
             UpdateMapScope();
+            CompleteContextRefresh();
 
             if (
                 _contextRefreshRequested &&
+                _contextRefreshTask == null &&
                 DateTime.UtcNow >= _nextContextAttemptUtc
             )
             {
@@ -332,76 +337,27 @@ namespace Stacklight
 
             try
             {
-                var playset = _pdxPlatform.GetActivePlaysetSync();
-                if (playset == null)
-                {
-                    _modsSnapshot = Array.Empty<ModContextEntry>();
-                    UpdateContextBindings("No active playset", _modsSnapshot);
-                    return;
-                }
-
-                HashSet<PdxMod> activeMods =
-                    _pdxPlatform.GetModsInActivePlaysetSync();
-                if (activeMods == null)
+                if (
+                    !TryStartActiveModsQuery(
+                        _pdxPlatform,
+                        out Task? pendingTask,
+                        out HashSet<PdxMod>? immediateResult
+                    )
+                )
                 {
                     ScheduleContextRetry(
-                        "Active playset details are temporarily unavailable"
+                        "Installed playset service is not supported yet"
                     );
                     return;
                 }
 
-                var entries = new List<ModContextEntry>(activeMods.Count);
-                foreach (PdxMod mod in activeMods)
+                if (pendingTask != null)
                 {
-                    string name = Limit(
-                        string.IsNullOrWhiteSpace(mod.displayName)
-                            ? "Unnamed mod"
-                            : mod.displayName.Trim(),
-                        180
-                    );
-                    string version = Limit(
-                        string.IsNullOrWhiteSpace(mod.userModVersion)
-                            ? (mod.version ?? string.Empty)
-                            : mod.userModVersion,
-                        80
-                    );
-                    string pdxId = Limit(mod.id ?? string.Empty, 80);
-                    string thumbnailPath = Limit(
-                        mod.thumbnailPath ?? string.Empty,
-                        512
-                    );
-                    string integration = GetRecognizedIntegration(
-                        pdxId,
-                        name
-                    );
-
-                    entries.Add(
-                        new ModContextEntry(
-                            pdxId,
-                            name,
-                            version,
-                            thumbnailPath,
-                            !string.IsNullOrEmpty(integration),
-                            integration
-                        )
-                    );
+                    _contextRefreshTask = pendingTask;
+                    return;
                 }
 
-                entries.Sort(
-                    (left, right) => string.Compare(
-                        left.Name,
-                        right.Name,
-                        StringComparison.OrdinalIgnoreCase
-                    )
-                );
-                _modsSnapshot = entries.ToArray();
-                UpdateContextBindings(
-                    string.Concat(
-                        _modsSnapshot.Length,
-                        " enabled mods in active playset"
-                    ),
-                    _modsSnapshot
-                );
+                ApplyActiveMods(immediateResult);
             }
             catch
             {
@@ -409,6 +365,169 @@ namespace Stacklight
                     "Active playset details are temporarily unavailable"
                 );
             }
+        }
+
+        private void CompleteContextRefresh()
+        {
+            Task? task = _contextRefreshTask;
+            if (task == null || !task.IsCompleted)
+            {
+                return;
+            }
+
+            _contextRefreshTask = null;
+            if (task.IsCanceled || task.IsFaulted)
+            {
+                _ = task.Exception;
+                ScheduleContextRetry(
+                    "Active playset details are temporarily unavailable"
+                );
+                return;
+            }
+
+            try
+            {
+                PropertyInfo? resultProperty = task.GetType().GetProperty(
+                    "Result",
+                    BindingFlags.Instance | BindingFlags.Public
+                );
+                HashSet<PdxMod>? activeMods = ConvertActiveMods(
+                    resultProperty?.GetValue(task)
+                );
+                ApplyActiveMods(activeMods);
+            }
+            catch
+            {
+                ScheduleContextRetry(
+                    "Active playset details are temporarily unavailable"
+                );
+            }
+        }
+
+        private static bool TryStartActiveModsQuery(
+            object platform,
+            out Task? pendingTask,
+            out HashSet<PdxMod>? immediateResult
+        )
+        {
+            pendingTask = null;
+            immediateResult = null;
+
+            Type platformType = platform.GetType();
+            string[] candidateNames =
+            {
+                "GetModsInActivePlaysetAsync",
+                "GetModsInActivePlayset",
+                "GetModsInActivePlaysetSync"
+            };
+
+            foreach (string methodName in candidateNames)
+            {
+                MethodInfo? method = platformType.GetMethod(
+                    methodName,
+                    BindingFlags.Instance | BindingFlags.Public,
+                    null,
+                    Type.EmptyTypes,
+                    null
+                );
+                if (method == null)
+                {
+                    continue;
+                }
+
+                object? result = method.Invoke(platform, null);
+                if (result is Task task)
+                {
+                    pendingTask = task;
+                    return true;
+                }
+
+                immediateResult = ConvertActiveMods(result);
+                return true;
+            }
+
+            return false;
+        }
+
+        private static HashSet<PdxMod>? ConvertActiveMods(object? value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            if (value is HashSet<PdxMod> set)
+            {
+                return set;
+            }
+
+            if (value is IEnumerable<PdxMod> sequence)
+            {
+                return new HashSet<PdxMod>(sequence);
+            }
+
+            return null;
+        }
+
+        private void ApplyActiveMods(HashSet<PdxMod>? activeMods)
+        {
+            if (activeMods == null)
+            {
+                ScheduleContextRetry(
+                    "Active playset details are temporarily unavailable"
+                );
+                return;
+            }
+
+            var entries = new List<ModContextEntry>(activeMods.Count);
+            foreach (PdxMod mod in activeMods)
+            {
+                string name = Limit(
+                    string.IsNullOrWhiteSpace(mod.displayName)
+                        ? "Unnamed mod"
+                        : mod.displayName.Trim(),
+                    180
+                );
+                string version = Limit(
+                    string.IsNullOrWhiteSpace(mod.userModVersion)
+                        ? (mod.version ?? string.Empty)
+                        : mod.userModVersion,
+                    80
+                );
+                string pdxId = Limit(mod.id ?? string.Empty, 80);
+                string thumbnailPath = Limit(
+                    mod.thumbnailPath ?? string.Empty,
+                    512
+                );
+                string integration = GetRecognizedIntegration(pdxId, name);
+
+                entries.Add(
+                    new ModContextEntry(
+                        pdxId,
+                        name,
+                        version,
+                        thumbnailPath,
+                        !string.IsNullOrEmpty(integration),
+                        integration
+                    )
+                );
+            }
+
+            entries.Sort(
+                (left, right) => string.Compare(
+                    left.Name,
+                    right.Name,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            );
+            _modsSnapshot = entries.ToArray();
+            UpdateContextBindings(
+                string.Concat(
+                    _modsSnapshot.Length,
+                    " enabled mods in active playset"
+                ),
+                _modsSnapshot
+            );
         }
 
         private void ScheduleContextRetry(string status)

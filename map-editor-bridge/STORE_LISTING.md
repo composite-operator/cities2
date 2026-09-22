@@ -72,15 +72,14 @@ developers.
 
 ## Compatibility
 
-- Mod version: 0.4.10
+- Mod version: 0.4.11
 - Tested game family: 1.6.x
 - Required DLC: none
 - Required mods: none
 
-## 0.4.10 release notes
+## 0.4.11 release notes
 
-- Prevents duplicate prefab UI bindings from competing over icon, name, and
-  detail requests.
-- Adds a compact name label and a missing-icon fallback to construction
-  buttons.
-- Preserves construction menus, placement, road naming, and integrations.
+- Rebuilt and checked against Cities: Skylines II 1.6.2f1.
+- Resolves the required stock UI modules through the official module registry.
+- Tolerates compatible registry path moves when the file name and export stay
+  unambiguous.

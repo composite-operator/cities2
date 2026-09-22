@@ -6,11 +6,11 @@ menus to the Cities: Skylines II Map Editor.
 Complete source:
 https://github.com/ximxesabortion/cities2/tree/main/map-editor-bridge
 
-Version 0.4.10 prevents duplicate prefab-detail UI bindings and gives every
-construction button a compact name label plus a missing-icon fallback. The
-verified construction, road naming, and optional-integration behavior is
-unchanged. When Stacklight is installed, it still owns the combined Logs and
-Mods view so no duplicate Mod List appears.
+Version 0.4.11 is rebuilt for game version 1.6.2f1 and adds a guarded registry
+fallback for stock UI modules that move without changing their file name and
+export. The verified construction, road naming, and optional-integration
+behavior is unchanged. When Stacklight is installed, it still owns the
+combined Logs and Mods view so no duplicate Mod List appears.
 
 ## What it changes
 

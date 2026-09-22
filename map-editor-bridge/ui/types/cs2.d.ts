@@ -22,6 +22,7 @@ declare module "cs2/modding" {
       component: ComponentType<Record<string, never>> | (() => JSX.Element),
       index?: number
     ): void;
+    find(query: string | RegExp): [path: string, ...exports: string[]][];
   };
 
   export type ModRegistrar = (moduleRegistry: ModuleRegistry) => void;

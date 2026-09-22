@@ -9,7 +9,7 @@
     <ImplicitUsings>disable</ImplicitUsings>
     <AssemblyName>Stacklight</AssemblyName>
     <RootNamespace>Stacklight</RootNamespace>
-    <Version>0.2.5</Version>
+    <Version>0.2.6</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
     <GameManagedPath Condition="'$(GameManagedPath)' == ''">$([System.Environment]::GetEnvironmentVariable('CSII_MANAGEDPATH'))</GameManagedPath>

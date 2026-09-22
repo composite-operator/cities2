@@ -2,6 +2,9 @@
 
 Paradox Mods ID: `152734`
 
+Version `0.2.6` supports Cities: Skylines II `1.6.2f1` and restores the Mods
+view after the Autumn Breeze playset API change.
+
 **Short description:** A compact draggable error logger and searchable live
 mod-tool shelf.
 

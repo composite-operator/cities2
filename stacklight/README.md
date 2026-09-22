@@ -6,6 +6,11 @@ useful controls from your active playset.
 
 Paradox Mods: PDX ID `152734`.
 
+Version 0.2.6 restores the active-playset tool shelf on game version 1.6.2f1
+and tolerates both the current asynchronous and older synchronous Paradox Mods
+query APIs. Diagnostics remain available if a later game build changes the
+playset service again.
+
 ## Controls
 
 - Click the beacon to open or close the logger.

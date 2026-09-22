@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.11
+
+- Rebuilt and checked the backend and UI against Cities: Skylines II 1.6.2f1.
+- Resolves stock `AssetMenu`, `ItemGrid`, and game-screen style modules through
+  the official module registry.
+- Adds a unique file-name and export fallback so compatible stock UI modules
+  can still load when a patch moves their registry path.
+- Fails closed with the existing unavailable message when no unambiguous stock
+  module exists.
+
 ## 0.4.10
 
 - Replaced the second editor-only `PrefabUISystem` with a mode-safe activator

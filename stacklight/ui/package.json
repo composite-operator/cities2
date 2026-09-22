@@ -1,6 +1,6 @@
 {
   "name": "cs2-stacklight",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "private": true,
   "description": "Compact copyable warning and error logger for Cities: Skylines II",
   "engines": {

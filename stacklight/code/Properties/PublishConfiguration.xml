@@ -65,16 +65,14 @@ This is an unofficial community mod and is not affiliated with Paradox Interacti
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/beta-stacklight-support-feedback-and-diagnostic-reports.1936365/" />
   <Screenshot Value="Properties/Screenshots/01-stacklight-overview.png" />
   <Screenshot Value="Properties/Screenshots/02-stacklight-expanded-and-mods.png" />
-  <ModVersion Value="0.2.5" />
+  <ModVersion Value="0.2.6" />
   <GameVersion Value="1.6.*" />
   <ChangeLog>
-Quieter notices, honest counts, and public source.
+Autumn Breeze playset compatibility.
 
-- Launcher and summary totals now count unique records instead of every repetition
-- Warning-level records move into a quieter Minor notices tier hidden by default
-- Repetition remains visible as xN on each record for diagnosis
-- Adds guidance for players and mod authors about recoverable diagnostics
-- Publishes complete source at github.com/ximxesabortion/cities2
+- Restores the Mods view on game version 1.6.2f1
+- Supports the current asynchronous and legacy synchronous playset APIs
+- Keeps diagnostics running if a later playset API is unavailable
   </ChangeLog>
   <AccessLevel Value="Public" />
 </Publish>

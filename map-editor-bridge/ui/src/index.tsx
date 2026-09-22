@@ -10,7 +10,7 @@ import "./mod-list-menu.module.scss";
 
 const register: ModRegistrar = (moduleRegistry) => {
   installEditorAssetUnlock(moduleRegistry);
-  const constructionRuntime = resolveConstructionRuntime();
+  const constructionRuntime = resolveConstructionRuntime(moduleRegistry);
 
   const ConstructionMenu = () =>
     constructionRuntime ? (
