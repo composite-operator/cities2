@@ -4,7 +4,7 @@ Map Editor Bridge adds the base game's normal construction toolbar and asset
 menus to the Cities: Skylines II Map Editor.
 
 Complete source:
-https://github.com/ximxesabortion/cities2/tree/main/map-editor-bridge
+https://github.com/composite-operator/cities2/tree/main/map-editor-bridge
 
 Version 0.4.11 is rebuilt for game version 1.6.2f1 and adds a guarded registry
 fallback for stock UI modules that move without changing their file name and

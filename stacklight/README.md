@@ -64,7 +64,7 @@ when validating their own code and copy the complete evidence for a bug report.
 ## Source
 
 Complete source:
-https://github.com/ximxesabortion/cities2/tree/main/stacklight
+https://github.com/composite-operator/cities2/tree/main/stacklight
 
 ## Mods context and compatibility
 

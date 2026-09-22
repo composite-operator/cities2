@@ -55,7 +55,7 @@ features; they are not required to use Map Editor Bridge.
 
 **Source code:**
 
-https://github.com/ximxesabortion/cities2/tree/main/map-editor-bridge
+https://github.com/composite-operator/cities2/tree/main/map-editor-bridge
 
 **Support and discussion:**
 

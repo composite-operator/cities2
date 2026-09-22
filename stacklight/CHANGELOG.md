@@ -20,7 +20,7 @@
 - Added explicit guidance for players and mod authors explaining why a working
   game can still emit recoverable warnings and errors.
 - Published the complete source at
-  `https://github.com/ximxesabortion/cities2/tree/main/stacklight`.
+  `https://github.com/composite-operator/cities2/tree/main/stacklight`.
 
 ## 0.2.4
 

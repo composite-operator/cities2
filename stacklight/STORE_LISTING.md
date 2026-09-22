@@ -15,7 +15,7 @@ and a lightweight tool shelf for the active playset.
 
 **Source code:**
 
-https://github.com/ximxesabortion/cities2/tree/main/stacklight
+https://github.com/composite-operator/cities2/tree/main/stacklight
 
 The launcher counts unique errors rather than every repeated occurrence.
 Warning-level records are available as quieter **Minor notices**, hidden by

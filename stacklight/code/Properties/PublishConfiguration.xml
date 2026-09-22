@@ -6,7 +6,7 @@
 Stacklight turns the game's diagnostic stream into a small, useful status beacon.
 
 Source code:
-https://github.com/ximxesabortion/cities2/tree/main/stacklight
+https://github.com/composite-operator/cities2/tree/main/stacklight
 
 The draggable three-color light stays tucked into the interface and opens a clean session log when you need it. Green means clear, amber means low-grade Minor notices are available, and red means errors were reported. The launcher badge counts unique errors rather than every repeated occurrence.
 
