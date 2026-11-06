@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.7
+
+- Checks the result type before calling a Paradox Mods playset query.
+- Skips incompatible signatures so a supported fallback can supply the Mods view.
+
 ## 0.2.6
 
 - Restored the active-playset Mods view on Cities: Skylines II 1.6.2f1 after

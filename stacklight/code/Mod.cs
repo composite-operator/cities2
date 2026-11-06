@@ -11,7 +11,7 @@ namespace Stacklight
 
         public void OnLoad(UpdateSystem updateSystem)
         {
-            Log.Info("Loading Stacklight 0.2.6.");
+            Log.Info("Loading Stacklight 0.2.7.");
             updateSystem.UpdateAt<StacklightUISystem>(
                 SystemUpdatePhase.UIUpdate
             );

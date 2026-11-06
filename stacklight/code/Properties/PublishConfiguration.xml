@@ -65,14 +65,11 @@ This is an unofficial community mod and is not affiliated with Paradox Interacti
   <ForumLink Value="https://forum.paradoxplaza.com/forum/threads/beta-stacklight-support-feedback-and-diagnostic-reports.1936365/" />
   <Screenshot Value="Properties/Screenshots/01-stacklight-overview.png" />
   <Screenshot Value="Properties/Screenshots/02-stacklight-expanded-and-mods.png" />
-  <ModVersion Value="0.2.6" />
+  <ModVersion Value="0.2.7" />
   <GameVersion Value="1.6.*" />
   <ChangeLog>
-Autumn Breeze playset compatibility.
-
-- Restores the Mods view on game version 1.6.2f1
-- Supports the current asynchronous and legacy synchronous playset APIs
-- Keeps diagnostics running if a later playset API is unavailable
+The Mods view checks playset query signatures and skips incompatible return
+types before calling the service. Built for 1.6.2f1.
   </ChangeLog>
   <AccessLevel Value="Public" />
 </Publish>

@@ -24,7 +24,7 @@ namespace Stacklight
     public sealed partial class StacklightUISystem : UISystemBase
     {
         private const string BindingGroup = "stacklight";
-        private const string StacklightVersion = "0.2.6";
+        private const string StacklightVersion = "0.2.7";
         private const int MaxUniqueEntries = 100;
         private const int MaxMessageLength = 2_000;
         private const int MaxDetailLength = 12_000;
@@ -413,7 +413,9 @@ namespace Stacklight
             pendingTask = null;
             immediateResult = null;
 
-            Type platformType = platform.GetType();
+            MethodInfo[] methods = platform.GetType().GetMethods(
+                BindingFlags.Instance | BindingFlags.Public
+            );
             string[] candidateNames =
             {
                 "GetModsInActivePlaysetAsync",
@@ -423,27 +425,37 @@ namespace Stacklight
 
             foreach (string methodName in candidateNames)
             {
-                MethodInfo? method = platformType.GetMethod(
-                    methodName,
-                    BindingFlags.Instance | BindingFlags.Public,
-                    null,
-                    Type.EmptyTypes,
-                    null
-                );
-                if (method == null)
+                foreach (MethodInfo method in methods)
                 {
-                    continue;
-                }
+                    if (method.Name != methodName || method.ContainsGenericParameters ||
+                        method.GetParameters().Length != 0)
+                    {
+                        continue;
+                    }
 
-                object? result = method.Invoke(platform, null);
-                if (result is Task task)
-                {
-                    pendingTask = task;
+                    Type resultType = method.ReturnType;
+                    bool asynchronous = typeof(Task).IsAssignableFrom(resultType);
+                    if (asynchronous)
+                    {
+                        resultType = resultType.GetProperty("Result")?.PropertyType
+                            ?? typeof(void);
+                    }
+                    if (!typeof(IEnumerable<PdxMod>).IsAssignableFrom(resultType))
+                    {
+                        continue;
+                    }
+
+                    object? result = method.Invoke(platform, null);
+                    if (asynchronous)
+                    {
+                        pendingTask = (Task?)result;
+                    }
+                    else
+                    {
+                        immediateResult = ConvertActiveMods(result);
+                    }
                     return true;
                 }
-
-                immediateResult = ConvertActiveMods(result);
-                return true;
             }
 
             return false;

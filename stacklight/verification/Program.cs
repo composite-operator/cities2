@@ -41,12 +41,22 @@ string assetReference =
     "assetdb://user/Saves/123/Sample%20Map.cok@" +
     "SampleMapTerrain.Prefab";
 
-object?[] asyncQueryArguments = { new AsyncPlaysetApi(), null, null };
+Type modType = AssemblyLoadContext.Default
+    .LoadFromAssemblyPath(Path.Combine(managedPath, "Colossal.PSI.Common.dll"))
+    .GetType("Colossal.PSI.Common.Mod", throwOnError: true)!;
+Type platformType = AssemblyLoadContext.Default
+    .LoadFromAssemblyPath(Path.Combine(managedPath, "Colossal.PSI.PdxSdk.dll"))
+    .GetType("Colossal.PSI.PdxSdk.PdxSdkPlatform", throwOnError: true)!;
+Type? installedResult = platformType.GetMethod("GetModsInActivePlaysetAsync", Type.EmptyTypes)
+    ?.ReturnType.GetProperty("Result")?.PropertyType;
+object CreatePlatform(Type apiType) =>
+    Activator.CreateInstance(apiType.MakeGenericType(modType))!;
+object?[] asyncQueryArguments = { CreatePlatform(typeof(AsyncPlaysetApi<>)), null, null };
 bool asyncQueryStarted = (bool)startActiveModsQuery.Invoke(
     null,
     asyncQueryArguments
 )!;
-object?[] legacyQueryArguments = { new LegacyPlaysetApi(), null, null };
+object?[] legacyQueryArguments = { CreatePlatform(typeof(LegacyPlaysetApi<>)), null, null };
 bool legacyQueryStarted = (bool)startActiveModsQuery.Invoke(
     null,
     legacyQueryArguments
@@ -96,8 +106,12 @@ var checks = new Dictionary<string, bool>
         )!,
     ["current async playset API is selected"] =
         asyncQueryStarted && asyncQueryArguments[1] is Task,
+    ["installed async API returns a mod collection"] =
+        installedResult != null && typeof(IEnumerable<>).MakeGenericType(modType)
+            .IsAssignableFrom(installedResult),
     ["legacy sync playset API remains supported"] =
-        legacyQueryStarted && legacyQueryArguments[1] is null,
+        legacyQueryStarted && legacyQueryArguments[1] is null &&
+        legacyQueryArguments[2] is System.Collections.IEnumerable,
     ["missing playset API fails without throwing"] = !missingQueryStarted
 };
 
@@ -108,20 +122,19 @@ foreach ((string name, bool passed) in checks)
 
 return checks.Values.All(value => value) ? 0 : 1;
 
-internal sealed class AsyncPlaysetApi
+internal sealed class AsyncPlaysetApi<T>
 {
-    public Task GetModsInActivePlaysetAsync()
+    public Task<HashSet<T>> GetModsInActivePlaysetAsync()
     {
-        return Task.CompletedTask;
+        return Task.FromResult(new HashSet<T>());
     }
 }
 
-internal sealed class LegacyPlaysetApi
+internal sealed class LegacyPlaysetApi<T>
 {
-    public object? GetModsInActivePlaysetSync()
-    {
-        return null;
-    }
+    // A newer method with an incompatible result must not mask the legacy API.
+    public Task GetModsInActivePlaysetAsync() => throw new InvalidOperationException();
+    public List<T> GetModsInActivePlaysetSync() => new List<T>();
 }
 
 internal sealed class MissingPlaysetApi

@@ -6,11 +6,13 @@ menus to the Cities: Skylines II Map Editor.
 Complete source:
 https://github.com/composite-operator/cities2/tree/main/map-editor-bridge
 
-Version 0.4.11 is rebuilt for game version 1.6.2f1 and adds a guarded registry
-fallback for stock UI modules that move without changing their file name and
-export. The verified construction, road naming, and optional-integration
-behavior is unchanged. When Stacklight is installed, it still owns the
-combined Logs and Mods view so no duplicate Mod List appears.
+Version 0.4.12 targets game version 1.6.2f1. If a patch moves the stock item
+grid, the bridge applies the editor unlock at the resolved path. If the host
+rejects the unlock, the editor menus still register with the stock grid.
+
+If **Build menus** is missing, check that Map Editor Bridge (PDX `152595`)
+is enabled in the playset used to start the editor. The game records the
+active playset and its enabled mods in `Logs/Modding.log`.
 
 ## What it changes
 

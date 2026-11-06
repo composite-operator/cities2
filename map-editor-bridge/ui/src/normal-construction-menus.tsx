@@ -114,13 +114,13 @@ const readModule = <T,>(
   moduleRegistry: ModuleRegistry,
   modulePath: string,
   exportName: string
-): T | null => {
+): { path: string; value: T } | null => {
   try {
     const preferred = moduleRegistry.get(modulePath, exportName) as
       | T
       | undefined;
     if (preferred) {
-      return preferred;
+      return { path: modulePath, value: preferred };
     }
   } catch {
     // Continue with the registry lookup below. Patch updates sometimes move a
@@ -145,10 +145,9 @@ const readModule = <T,>(
       return null;
     }
 
-    return (
-      (moduleRegistry.get(candidates[0][0], exportName) as T | undefined) ??
-      null
-    );
+    const path = candidates[0][0];
+    const value = moduleRegistry.get(path, exportName) as T | undefined;
+    return value ? { path, value } : null;
   } catch {
     return null;
   }
@@ -167,14 +166,14 @@ export function resolveConstructionRuntime(
       moduleRegistry,
       GAME_SCREEN_STYLES_PATH,
       "classes"
-    ) ?? {};
+    )?.value ?? {};
 
   if (!AssetMenu) {
     return null;
   }
 
   return {
-    AssetMenu,
+    AssetMenu: AssetMenu.value,
     gameScreenClasses
   };
 }
@@ -182,16 +181,17 @@ export function resolveConstructionRuntime(
 export function installEditorAssetUnlock(
   moduleRegistry: ModuleRegistry
 ): boolean {
-  const BaseItemGrid = readModule<ComponentType<ItemGridProps>>(
+  const grid = readModule<ComponentType<ItemGridProps>>(
     moduleRegistry,
     ITEM_GRID_PATH,
     "ItemGrid"
   );
 
-  if (!BaseItemGrid) {
+  if (!grid) {
     return false;
   }
 
+  const BaseItemGrid = grid.value;
   const EditorUnlockedItemGrid = (props: ItemGridProps) => {
     const isEditor = useValue(isEditorBinding);
     const items = isEditor
@@ -203,12 +203,13 @@ export function installEditorAssetUnlock(
     return <BaseItemGrid {...props} items={items} />;
   };
 
-  moduleRegistry.override(
-    ITEM_GRID_PATH,
-    "ItemGrid",
-    EditorUnlockedItemGrid
-  );
-  return true;
+  try {
+    moduleRegistry.override(grid.path, "ItemGrid", EditorUnlockedItemGrid);
+    return true;
+  } catch (error) {
+    console.warn("Map Editor Bridge: stock ItemGrid override unavailable.", error);
+    return false;
+  }
 }
 
 const isValidEntity = (entity: Entity | null | undefined) =>

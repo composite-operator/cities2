@@ -101,6 +101,8 @@ Invoke-Checked -FilePath $npm.Source -ArgumentList @("run", "check") `
     -WorkingDirectory $uiRoot
 Invoke-Checked -FilePath $npm.Source -ArgumentList @("run", "build") `
     -WorkingDirectory $uiRoot
+Invoke-Checked -FilePath $npm.Source -ArgumentList @("run", "verify") `
+    -WorkingDirectory $uiRoot
 
 $toolPath = [System.Environment]::GetEnvironmentVariable(
     "CSII_TOOLPATH",
@@ -386,6 +388,7 @@ $uiSourceFiles = @(
     "package-lock.json",
     "package.json",
     "tsconfig.json",
+    "verify-registration.mjs",
     "webpack.config.js"
 )
 foreach ($file in $uiSourceFiles) {

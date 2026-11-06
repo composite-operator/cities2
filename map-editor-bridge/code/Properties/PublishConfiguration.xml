@@ -50,14 +50,11 @@ Back up important maps before using any editor tool. This is an unofficial commu
   <Screenshot Value="Properties/Screenshots/03-road-name-bridge-store.jpg" />
   <Screenshot Value="Properties/Screenshots/05-bridge-showcase-store-duplicate.jpg" />
   <Screenshot Value="Properties/Screenshots/04-road-name-bridge-store-duplicate.jpg" />
-  <ModVersion Value="0.4.11" />
+  <ModVersion Value="0.4.12" />
   <GameVersion Value="1.6.*" />
   <ChangeLog>
-Autumn Breeze UI compatibility.
-
-- Rebuilt and checked against Cities: Skylines II 1.6.2f1
-- Resolves required stock UI modules through the official module registry
-- Tolerates compatible registry path moves when the file name and export stay unambiguous
+Fixes editor menu registration when the stock item grid moves. If the game
+rejects the optional unlock, the editor menus still register. Built for 1.6.2f1.
   </ChangeLog>
   <AccessLevel Value="Public" />
 </Publish>

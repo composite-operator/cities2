@@ -1,6 +1,6 @@
 {
   "name": "cs2-map-editor-bridge",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "private": true,
   "description": "Normal construction menus and editor placement bridge for Cities: Skylines II",
   "engines": {
@@ -8,7 +8,8 @@
   },
   "scripts": {
     "build": "webpack",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "verify": "node verify-registration.mjs"
   },
   "dependencies": {
     "react": "18.3.1",

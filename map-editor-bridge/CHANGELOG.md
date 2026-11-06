@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.12
+
+- Fixes a registration failure when the host moves the stock item grid.
+- Keeps the construction menus available when the stock grid rejects the unlock.
+- Checks the compiled UI bundle during packaging against five registry cases.
+
 ## 0.4.11
 
 - Rebuilt and checked the backend and UI against Cities: Skylines II 1.6.2f1.

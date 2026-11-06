@@ -72,14 +72,12 @@ developers.
 
 ## Compatibility
 
-- Mod version: 0.4.11
-- Tested game family: 1.6.x
+- Mod version: 0.4.12
+- Build target: 1.6.2f1
 - Required DLC: none
 - Required mods: none
 
-## 0.4.11 release notes
+## 0.4.12 release notes
 
-- Rebuilt and checked against Cities: Skylines II 1.6.2f1.
-- Resolves the required stock UI modules through the official module registry.
-- Tolerates compatible registry path moves when the file name and export stay
-  unambiguous.
+- Applies the editor asset unlock at the resolved stock item-grid path.
+- Keeps the editor menus registered if the game rejects the optional unlock.

@@ -1,4 +1,4 @@
-# Stacklight 0.2.6 release package
+# Stacklight 0.2.7 release package
 
 The `Mod/Stacklight` folder contains the runtime files. `StoreListing` contains
 the publishing art and metadata. `Source` contains the corresponding source
